@@ -27,23 +27,33 @@
       margin-top: 20px;
       font-size: 1.5rem;
     }
+    #result {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: green;
+      text-align: center;
+    }
   </style>
   <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
   <h1>QRコードをスキャンしてください</h1>
   <div id="reader"></div>
+  <div id="result"></div> <!-- 結果表示用 -->
 
   <script>
-    const correctCode = "pass12345"; // ←正しいQRコードの内容
+    const correctCode = "pass12345"; // 正しいQRコードの内容
 
     function onScanSuccess(decodedText, decodedResult) {
       console.log("読み取り成功:", decodedText);
+
       if (decodedText === correctCode) {
-        // カメラを停止して、次の画面へ遷移
-        html5QrcodeScanner.clear().then(() => {
-          window.location.href = "Projects/Projects1.html"; // ←遷移先ページ
-        }).catch(err => console.error("停止に失敗:", err));
+        document.getElementById("result").innerHTML = `
+          <strong>読み取り成功！！</strong><br>
+          読み取ったデータ: ${decodedText}
+        `;
+        // カメラを停止
+        html5QrcodeScanner.clear().catch(err => console.error("停止に失敗:", err));
       }
     }
 
@@ -53,11 +63,10 @@
     Html5Qrcode.getCameras().then(devices => {
       if (devices && devices.length) {
         html5QrcodeScanner.start(
-          { facingMode: "environment" }, // 背面カメラを使う
+          { facingMode: "environment" },
           config,
           onScanSuccess,
           error => {
-            // 読み取り失敗しても何もしない（ログだけ）
             console.warn("読み取り失敗:", error);
           }
         );
